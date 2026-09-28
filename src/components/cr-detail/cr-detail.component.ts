@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CrApiService } from '../../api/cr-api.service';
@@ -19,7 +19,7 @@ import { canApprovePolicy } from '../../common/permissions';
 	imports: [CommonModule, ReactiveFormsModule],
 	templateUrl: './cr-detail.component.html',
 })
-export class CrDetailComponent implements OnChanges {
+export class CrDetailComponent implements OnChanges , OnInit {
 
 	@Input() id!: string;
 	// Sends the updated CR to the parent component after a successful approve/reject.
@@ -35,7 +35,9 @@ rejectControl = new FormControl('', {
 	validators: [Validators.required],
 });
 	constructor(private readonly api: CrApiService, private readonly session: SessionService) {}
-
+ngOnInit(): void {
+	void this.load();
+}
 	ngOnChanges(changes: SimpleChanges): void {
 	if (changes['id'] && this.id) {
 		void this.load();
