@@ -39,6 +39,12 @@ export class CrListComponent implements OnInit {
 		}
 	}
 
+
+	// Reloads the list when a change request is updated from the detail view.
+refresh(): void {
+	void this.load();
+}
+
 	onFilterChange(value: string): void {
 		this.statusFilter = value as CrStatus | 'ALL';
 	}

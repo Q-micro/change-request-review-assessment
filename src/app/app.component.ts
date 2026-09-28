@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CrListComponent } from '../components/cr-list/cr-list.component';
 import { CrDetailComponent } from '../components/cr-detail/cr-detail.component';
@@ -24,6 +24,10 @@ export class AppComponent {
 	selectedId: string | null = 'CR-1';
 	show = true;
 
+	// Gives the parent access to the list component so it can refresh
+// after the detail view successfully changes a CR's status.
+@ViewChild(CrListComponent) crList?: CrListComponent;
+
 	constructor(public readonly session: SessionService) {}
 
 	switchUser(key: string): void {
@@ -34,6 +38,11 @@ export class AppComponent {
 	onSelect(id: string): void {
 		this.selectedId = id;
 	}
+
+	// Refreshes the list after a CR is successfully approved or rejected.
+onStatusChanged(): void {
+	this.crList?.refresh();
+}
 
 	/** Destroy + recreate the panes so they re-load as the newly selected user. */
 	private reload(): void {

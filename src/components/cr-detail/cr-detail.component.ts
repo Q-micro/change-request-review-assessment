@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CrApiService } from '../../api/cr-api.service';
@@ -20,8 +20,11 @@ import { canApprovePolicy } from '../../common/permissions';
 	templateUrl: './cr-detail.component.html',
 })
 export class CrDetailComponent implements OnInit {
-	@Input() id!: string;
 
+	@Input() id!: string;
+	// Sends the updated CR to the parent component after a successful approve/reject.
+   //This lets the parent refresh the list so its status stays in sync with the detail view.
+    @Output() statusChanged = new EventEmitter<CrDetail>();
 	state: ViewState<CrDetail> = idle();
 	submitting = false;
 	actionError?: string;
@@ -89,6 +92,7 @@ async approve(): Promise<void> {
 	try {
 		const updated = await this.api.approve(this.session.user, this.detail.id, new Date().toISOString());
 		this.state = { status: 'loaded', data: updated };
+		this.statusChanged.emit(updated);
 	} catch (err) {
 		this.actionError = (err as Error).message;
 	} finally {
@@ -115,6 +119,7 @@ async reject(): Promise<void> {
 		);
 
 		this.state = { status: 'loaded', data: updated };
+		this.statusChanged.emit(updated);
 	} catch (err) {
 		this.actionError = (err as Error).message;
 	} finally {
