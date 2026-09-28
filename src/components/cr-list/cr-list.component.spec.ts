@@ -3,6 +3,7 @@ import { CrListComponent } from './cr-list.component';
 import { SessionService } from '../../session/session.service';
 import { users } from '../../api/fixtures';
 import { ReqUser } from '../../models/cr.models';
+import { CrApiService } from '../../api/cr-api.service';
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
@@ -35,6 +36,47 @@ it('filters rows by status', async () => {
 	const rows = fixture.nativeElement.querySelectorAll('.cr-list__row');
 	expect(rows.length).toBe(1);
 	expect(rows[0].textContent).toContain('CR-1');
+});
+
+//test loading state
+it('shows the loading state while change requests are being fetched', async () => {
+	TestBed.configureTestingModule({
+		imports: [CrListComponent],
+		providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+	});
+
+	await TestBed.compileComponents();
+
+	const fixture = TestBed.createComponent(CrListComponent);
+	fixture.detectChanges();
+
+	expect(fixture.nativeElement.querySelector('.cr-list__loading')).not.toBeNull();
+
+	await flush();
+});
+
+//test error state
+it('shows the error state when loading change requests fails', async () => {
+	TestBed.configureTestingModule({
+		imports: [CrListComponent],
+		providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+	});
+
+	await TestBed.compileComponents();
+
+	const fixture = TestBed.createComponent(CrListComponent);
+	const api = TestBed.inject(CrApiService);
+
+	api.failNext = true;
+
+	fixture.detectChanges();
+	await flush();
+	fixture.detectChanges();
+
+	expect(fixture.nativeElement.querySelector('.cr-list__error')).not.toBeNull();
+	expect(fixture.nativeElement.querySelector('.cr-list__error').textContent).toContain(
+		'Couldn\'t load'
+	);
 });
 
 
