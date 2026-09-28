@@ -77,4 +77,15 @@ it('rejects a pending change request with a reason', async () => {
 	expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
 	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('REJECTED');
 });
+
+//test for rejecting without a reason
+it('does not reject when the reason is empty', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+
+	await fixture.componentInstance.reject();
+	fixture.detectChanges();
+
+	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+	expect(fixture.componentInstance.rejectControl.touched).toBe(true);
+});
 });
