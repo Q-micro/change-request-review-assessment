@@ -54,6 +54,14 @@ describe('CrDetailComponent', () => {
 		expect(approveBtn.disabled).toBe(true);
 	});
 
+//test 
+	it('does not show Reject controls to a read-only viewer', async () => {
+	const fixture = await render(users.viewer, 'CR-1');
+
+	expect(
+		fixture.nativeElement.querySelector('.cr-actions__reject')
+	).toBeNull();
+});
 
 	//Approve test 
 	it('approves a pending change request', async () => {
