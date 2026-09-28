@@ -81,6 +81,23 @@ it('shows an error when approve fails', async () => {
 	expect(fixture.componentInstance.submitting).toBe(false);
 });
 
+//test for reject failure
+it('shows an error when reject fails', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+	const api = TestBed.inject(CrApiService);
+
+	fixture.componentInstance.rejectControl.setValue('Invalid change');
+
+	api.failNext = true;
+
+	await fixture.componentInstance.reject();
+	fixture.detectChanges();
+
+	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+	expect(fixture.componentInstance.actionError).toBe('Network error');
+	expect(fixture.componentInstance.submitting).toBe(false);
+});
+
 
 //Reject test
 it('rejects a pending change request with a reason', async () => {
