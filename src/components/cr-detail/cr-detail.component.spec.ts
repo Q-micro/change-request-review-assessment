@@ -98,6 +98,20 @@ it('shows an error when reject fails', async () => {
 	expect(fixture.componentInstance.submitting).toBe(false);
 });
 
+//test for preventing duplicate approve requests
+it('prevents duplicate approve requests while submitting', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+	const api = TestBed.inject(CrApiService);
+
+	api.latencyMs = 50;
+
+	const first = fixture.componentInstance.approve();
+	const second = fixture.componentInstance.approve();
+
+	await Promise.all([first, second]);
+
+	expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+});
 
 //Reject test
 it('rejects a pending change request with a reason', async () => {
