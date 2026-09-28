@@ -7,7 +7,7 @@ import { CrDetail, TimelineEntry } from '../../models/cr.models';
 import { idle, loading, ViewState } from '../../common/view-state';
 import { computeDiff, DiffRow } from '../diff.util';
 import { formatMoney } from '../../common/money.util';
-
+import { canApprovePolicy } from '../../common/permissions';
 /**
  * Change Request DETAIL page: loads a CR and renders the diff/preview, the approval timeline, and
  * permission-aware Approve/Reject actions. `load`, the diff binding, and the template skeleton are
@@ -62,7 +62,8 @@ export class CrDetailComponent implements OnInit {
 	/** Whether the current user may approve the loaded CR. */
 	get canApprove(): boolean {
 		// NOTE: this only looks at the CR status. The UI must also respect the user's permissions.
-		return this.detail?.status === 'PENDING_APPROVAL';
+		// Approve requires both the correct CR status and an approval policy.
+		return this.detail?.status === 'PENDING_APPROVAL' && canApprovePolicy(this.session.user);
 	}
 
 	get canReject(): boolean {

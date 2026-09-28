@@ -37,4 +37,4 @@ export function computeDiff(baseline: LineItem[], proposed: LineItem[]): DiffRow
 		}
 	}
 	return rows;
-}https://github.com/Q-micro/change-request-review-assessment.git
+}
