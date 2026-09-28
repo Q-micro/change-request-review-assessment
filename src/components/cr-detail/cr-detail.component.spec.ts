@@ -54,6 +54,17 @@ describe('CrDetailComponent', () => {
 		expect(approveBtn.disabled).toBe(true);
 	});
 
+//test description-only change 
+	it('renders description changes in the diff', async () => {
+	const fixture = await render(users.approver, 'CR-2');
+	const rows = fixture.nativeElement.querySelectorAll('.cr-diff__row');
+
+	expect(rows.length).toBe(1);
+	expect(rows[0].getAttribute('data-kind')).toBe('changed');
+expect(rows[0].textContent).toContain('Widget B');
+expect(rows[0].textContent).toContain('Widget B (new supplier)');
+});
+
 //test 
 	it('does not show Reject controls to a read-only viewer', async () => {
 	const fixture = await render(users.viewer, 'CR-1');
