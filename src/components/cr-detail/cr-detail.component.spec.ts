@@ -3,6 +3,7 @@ import { CrDetailComponent } from './cr-detail.component';
 import { SessionService } from '../../session/session.service';
 import { users } from '../../api/fixtures';
 import { ReqUser } from '../../models/cr.models';
+import { CrApiService } from '../../api/cr-api.service';
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
@@ -64,6 +65,22 @@ describe('CrDetailComponent', () => {
 	expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
 	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('APPROVED');
 });
+
+//test for approve failure
+it('shows an error when approve fails', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+	const api = TestBed.inject(CrApiService);
+
+	api.failNext = true;
+
+	await fixture.componentInstance.approve();
+	fixture.detectChanges();
+
+	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+	expect(fixture.componentInstance.actionError).toBe('Network error');
+	expect(fixture.componentInstance.submitting).toBe(false);
+});
+
 
 //Reject test
 it('rejects a pending change request with a reason', async () => {
