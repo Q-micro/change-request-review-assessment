@@ -26,9 +26,55 @@ describe('CrDetailComponent', () => {
 		expect(fixture.nativeElement.querySelector('.cr-detail__header h2').textContent).toContain('Add 1 unit of SKU-A');
 	});
 
+
+	//test
+	it('renders the diff, totals, and chronological timeline', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+	const el = fixture.nativeElement;
+
+	expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,000');
+	expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,500');
+	expect(el.querySelector('.cr-detail__delta').textContent).toContain('500');
+
+	const rows = el.querySelectorAll('.cr-diff__row');
+	expect(rows.length).toBe(2);
+	expect(rows[0].textContent).toContain('SKU-A');
+	expect(rows[0].getAttribute('data-kind')).toBe('changed');
+
+	const timeline = el.querySelectorAll('.cr-timeline__entry');
+	expect(timeline.length).toBe(3);
+	expect(timeline[0].textContent).toContain('CREATE');
+	expect(timeline[2].textContent).toContain('SEND_FOR_APPROVAL');
+});
+
 	it('disables Approve for a read-only viewer on a pending CR', async () => {
 		const fixture = await render(users.viewer, 'CR-1'); // viewer: cr_r_o only; CR-1 is PENDING_APPROVAL
 		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
 		expect(approveBtn.disabled).toBe(true);
 	});
+
+
+	//Approve test 
+	it('approves a pending change request', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+
+	await fixture.componentInstance.approve();
+	fixture.detectChanges();
+
+	expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('APPROVED');
+});
+
+//Reject test
+it('rejects a pending change request with a reason', async () => {
+	const fixture = await render(users.approver, 'CR-1');
+
+	fixture.componentInstance.rejectControl.setValue('Price is too high');
+
+	await fixture.componentInstance.reject();
+	fixture.detectChanges();
+
+	expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
+	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('REJECTED');
+});
 });
