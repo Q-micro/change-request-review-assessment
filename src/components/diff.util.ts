@@ -28,7 +28,8 @@ export function computeDiff(baseline: LineItem[], proposed: LineItem[]): DiffRow
 			continue;
 		}
 		// A change includes either a unit price or quantity difference.
-		const changed = b.unitPrice !== p.unitPrice || b.quantity !== p.quantity;
+		//And also a description difference.
+		const changed = b.unitPrice !== p.unitPrice || b.quantity !== p.quantity || b.description !== p.description;
 		rows.push({ sku: b.sku, kind: changed ? 'changed' : 'unchanged', baseline: b, proposed: p });
 	}
 	for (const p of proposed) {
