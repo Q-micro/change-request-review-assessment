@@ -27,26 +27,25 @@ describe('CrDetailComponent', () => {
 		expect(fixture.nativeElement.querySelector('.cr-detail__header h2').textContent).toContain('Add 1 unit of SKU-A');
 	});
 
-
 	//test
 	it('renders the diff, totals, and chronological timeline', async () => {
-	const fixture = await render(users.approver, 'CR-1');
-	const el = fixture.nativeElement;
+		const fixture = await render(users.approver, 'CR-1');
+		const el = fixture.nativeElement;
 
-	expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,000');
-	expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,500');
-	expect(el.querySelector('.cr-detail__delta').textContent).toContain('500');
+		expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,000');
+		expect(el.querySelector('.cr-detail__totals').textContent).toContain('8,500');
+		expect(el.querySelector('.cr-detail__delta').textContent).toContain('500');
 
-	const rows = el.querySelectorAll('.cr-diff__row');
-	expect(rows.length).toBe(2);
-	expect(rows[0].textContent).toContain('SKU-A');
-	expect(rows[0].getAttribute('data-kind')).toBe('changed');
+		const rows = el.querySelectorAll('.cr-diff__row');
+		expect(rows.length).toBe(2);
+		expect(rows[0].textContent).toContain('SKU-A');
+		expect(rows[0].getAttribute('data-kind')).toBe('changed');
 
-	const timeline = el.querySelectorAll('.cr-timeline__entry');
-	expect(timeline.length).toBe(3);
-	expect(timeline[0].textContent).toContain('CREATE');
-	expect(timeline[2].textContent).toContain('SEND_FOR_APPROVAL');
-});
+		const timeline = el.querySelectorAll('.cr-timeline__entry');
+		expect(timeline.length).toBe(3);
+		expect(timeline[0].textContent).toContain('CREATE');
+		expect(timeline[2].textContent).toContain('SEND_FOR_APPROVAL');
+	});
 
 	it('disables Approve for a read-only viewer on a pending CR', async () => {
 		const fixture = await render(users.viewer, 'CR-1'); // viewer: cr_r_o only; CR-1 is PENDING_APPROVAL
@@ -54,105 +53,103 @@ describe('CrDetailComponent', () => {
 		expect(approveBtn.disabled).toBe(true);
 	});
 
-//test description-only change 
+	//test description-only change
 	it('renders description changes in the diff', async () => {
-	const fixture = await render(users.approver, 'CR-2');
-	const rows = fixture.nativeElement.querySelectorAll('.cr-diff__row');
+		const fixture = await render(users.approver, 'CR-2');
+		const rows = fixture.nativeElement.querySelectorAll('.cr-diff__row');
 
-	expect(rows.length).toBe(1);
-	expect(rows[0].getAttribute('data-kind')).toBe('changed');
-expect(rows[0].textContent).toContain('Widget B');
-expect(rows[0].textContent).toContain('Widget B (new supplier)');
-});
+		expect(rows.length).toBe(1);
+		expect(rows[0].getAttribute('data-kind')).toBe('changed');
+		expect(rows[0].textContent).toContain('Widget B');
+		expect(rows[0].textContent).toContain('Widget B (new supplier)');
+	});
 
-//test 
+	//test
 	it('does not show Reject controls to a read-only viewer', async () => {
-	const fixture = await render(users.viewer, 'CR-1');
+		const fixture = await render(users.viewer, 'CR-1');
 
-	expect(
-		fixture.nativeElement.querySelector('.cr-actions__reject')
-	).toBeNull();
-});
+		expect(fixture.nativeElement.querySelector('.cr-actions__reject')).toBeNull();
+	});
 
-	//Approve test 
+	//Approve test
 	it('approves a pending change request', async () => {
-	const fixture = await render(users.approver, 'CR-1');
+		const fixture = await render(users.approver, 'CR-1');
 
-	await fixture.componentInstance.approve();
-	fixture.detectChanges();
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
 
-	expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
-	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('APPROVED');
-});
+		expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+		expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('APPROVED');
+	});
 
-//test for approve failure
-it('shows an error when approve fails', async () => {
-	const fixture = await render(users.approver, 'CR-1');
-	const api = TestBed.inject(CrApiService);
+	//test for approve failure
+	it('shows an error when approve fails', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const api = TestBed.inject(CrApiService);
 
-	api.failNext = true;
+		api.failNext = true;
 
-	await fixture.componentInstance.approve();
-	fixture.detectChanges();
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
 
-	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
-	expect(fixture.componentInstance.actionError).toBe('Network error');
-	expect(fixture.componentInstance.submitting).toBe(false);
-});
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+		expect(fixture.componentInstance.actionError).toBe('Network error');
+		expect(fixture.componentInstance.submitting).toBe(false);
+	});
 
-//test for reject failure
-it('shows an error when reject fails', async () => {
-	const fixture = await render(users.approver, 'CR-1');
-	const api = TestBed.inject(CrApiService);
+	//test for reject failure
+	it('shows an error when reject fails', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const api = TestBed.inject(CrApiService);
 
-	fixture.componentInstance.rejectControl.setValue('Invalid change');
+		fixture.componentInstance.rejectControl.setValue('Invalid change');
 
-	api.failNext = true;
+		api.failNext = true;
 
-	await fixture.componentInstance.reject();
-	fixture.detectChanges();
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
 
-	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
-	expect(fixture.componentInstance.actionError).toBe('Network error');
-	expect(fixture.componentInstance.submitting).toBe(false);
-});
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+		expect(fixture.componentInstance.actionError).toBe('Network error');
+		expect(fixture.componentInstance.submitting).toBe(false);
+	});
 
-//test for preventing duplicate approve requests
-it('prevents duplicate approve requests while submitting', async () => {
-	const fixture = await render(users.approver, 'CR-1');
-	const api = TestBed.inject(CrApiService);
+	//test for preventing duplicate approve requests
+	it('prevents duplicate approve requests while submitting', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const api = TestBed.inject(CrApiService);
 
-	api.latencyMs = 50;
+		api.latencyMs = 50;
 
-	const first = fixture.componentInstance.approve();
-	const second = fixture.componentInstance.approve();
+		const first = fixture.componentInstance.approve();
+		const second = fixture.componentInstance.approve();
 
-	await Promise.all([first, second]);
+		await Promise.all([first, second]);
 
-	expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
-});
+		expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+	});
 
-//Reject test
-it('rejects a pending change request with a reason', async () => {
-	const fixture = await render(users.approver, 'CR-1');
+	//Reject test
+	it('rejects a pending change request with a reason', async () => {
+		const fixture = await render(users.approver, 'CR-1');
 
-	fixture.componentInstance.rejectControl.setValue('Price is too high');
+		fixture.componentInstance.rejectControl.setValue('Price is too high');
 
-	await fixture.componentInstance.reject();
-	fixture.detectChanges();
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
 
-	expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
-	expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('REJECTED');
-});
+		expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
+		expect(fixture.nativeElement.querySelector('.cr-status').textContent).toContain('REJECTED');
+	});
 
-//test for rejecting without a reason
-it('does not reject when the reason is empty', async () => {
-	const fixture = await render(users.approver, 'CR-1');
+	//test for rejecting without a reason
+	it('does not reject when the reason is empty', async () => {
+		const fixture = await render(users.approver, 'CR-1');
 
-	await fixture.componentInstance.reject();
-	fixture.detectChanges();
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
 
-	expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
-	expect(fixture.componentInstance.rejectControl.touched).toBe(true);
-});
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+		expect(fixture.componentInstance.rejectControl.touched).toBe(true);
+	});
 });

@@ -21,7 +21,16 @@ export class CrListComponent implements OnInit {
 
 	state: ViewState<CrSummary[]> = idle();
 	statusFilter: CrStatus | 'ALL' = 'ALL';
-	readonly statuses: (CrStatus | 'ALL')[] = ['ALL', 'DRAFT', 'SUBMITTED', 'PENDING_APPROVAL', 'APPROVED', 'APPLIED', 'REJECTED', 'CANCELLED'];
+	readonly statuses: (CrStatus | 'ALL')[] = [
+		'ALL',
+		'DRAFT',
+		'SUBMITTED',
+		'PENDING_APPROVAL',
+		'APPROVED',
+		'APPLIED',
+		'REJECTED',
+		'CANCELLED',
+	];
 
 	constructor(private readonly api: CrApiService, private readonly session: SessionService) {}
 
@@ -39,24 +48,23 @@ export class CrListComponent implements OnInit {
 		}
 	}
 
-
 	// Reloads the list when a change request is updated from the detail view.
-refresh(): void {
-	void this.load();
-}
+	refresh(): void {
+		void this.load();
+	}
 
 	onFilterChange(value: string): void {
 		this.statusFilter = value as CrStatus | 'ALL';
 	}
 
 	/** Rows to render, after applying the active status filter. */
-get visibleRows(): CrSummary[] {
-	const rows = this.state.data ?? [];
+	get visibleRows(): CrSummary[] {
+		const rows = this.state.data ?? [];
 
-	// Show all rows when no status filter is selected.
-	if (this.statusFilter === 'ALL') return rows;
+		// Show all rows when no status filter is selected.
+		if (this.statusFilter === 'ALL') return rows;
 
-	// Otherwise, only show rows matching the selected status.
-	return rows.filter((row) => row.status === this.statusFilter);
-}
+		// Otherwise, only show rows matching the selected status.
+		return rows.filter((row) => row.status === this.statusFilter);
+	}
 }

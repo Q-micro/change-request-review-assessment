@@ -24,7 +24,7 @@ describe('computeDiff', () => {
 
 	//Testing for description change as well
 	it('detects a description-only change as changed', () => {
-	const rows = computeDiff(base, [{ ...base[0], description: 'Updated Widget A' }, base[1]]);
-	expect(rows.find((r) => r.sku === 'SKU-A')?.kind).toBe('changed');
-});
+		const rows = computeDiff(base, [{ ...base[0], description: 'Updated Widget A' }, base[1]]);
+		expect(rows.find((r) => r.sku === 'SKU-A')?.kind).toBe('changed');
+	});
 });

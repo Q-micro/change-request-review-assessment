@@ -25,8 +25,8 @@ export class AppComponent {
 	show = true;
 
 	// Gives the parent access to the list component so it can refresh
-// after the detail view successfully changes a CR's status.
-@ViewChild(CrListComponent) crList?: CrListComponent;
+	// after the detail view successfully changes a CR's status.
+	@ViewChild(CrListComponent) crList?: CrListComponent;
 
 	constructor(public readonly session: SessionService) {}
 
@@ -40,9 +40,9 @@ export class AppComponent {
 	}
 
 	// Refreshes the list after a CR is successfully approved or rejected.
-onStatusChanged(): void {
-	this.crList?.refresh();
-}
+	onStatusChanged(): void {
+		this.crList?.refresh();
+	}
 
 	/** Destroy + recreate the panes so they re-load as the newly selected user. */
 	private reload(): void {

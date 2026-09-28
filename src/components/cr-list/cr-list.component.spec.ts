@@ -26,59 +26,56 @@ describe('CrListComponent', () => {
 		expect(fixture.nativeElement.querySelectorAll('.cr-list__row').length).toBe(3); // org-alpha: CR-1, CR-2, CR-3
 	});
 
-//test
-it('filters rows by status', async () => {
-	const fixture = await render(users.approver);
+	//test
+	it('filters rows by status', async () => {
+		const fixture = await render(users.approver);
 
-	fixture.componentInstance.onFilterChange('PENDING_APPROVAL');
-	fixture.detectChanges();
+		fixture.componentInstance.onFilterChange('PENDING_APPROVAL');
+		fixture.detectChanges();
 
-	const rows = fixture.nativeElement.querySelectorAll('.cr-list__row');
-	expect(rows.length).toBe(1);
-	expect(rows[0].textContent).toContain('CR-1');
-});
-
-//test loading state
-it('shows the loading state while change requests are being fetched', async () => {
-	TestBed.configureTestingModule({
-		imports: [CrListComponent],
-		providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+		const rows = fixture.nativeElement.querySelectorAll('.cr-list__row');
+		expect(rows.length).toBe(1);
+		expect(rows[0].textContent).toContain('CR-1');
 	});
 
-	await TestBed.compileComponents();
+	//test loading state
+	it('shows the loading state while change requests are being fetched', async () => {
+		TestBed.configureTestingModule({
+			imports: [CrListComponent],
+			providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+		});
 
-	const fixture = TestBed.createComponent(CrListComponent);
-	fixture.detectChanges();
+		await TestBed.compileComponents();
 
-	expect(fixture.nativeElement.querySelector('.cr-list__loading')).not.toBeNull();
+		const fixture = TestBed.createComponent(CrListComponent);
+		fixture.detectChanges();
 
-	await flush();
-});
+		expect(fixture.nativeElement.querySelector('.cr-list__loading')).not.toBeNull();
 
-//test error state
-it('shows the error state when loading change requests fails', async () => {
-	TestBed.configureTestingModule({
-		imports: [CrListComponent],
-		providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+		await flush();
 	});
 
-	await TestBed.compileComponents();
+	//test error state
+	it('shows the error state when loading change requests fails', async () => {
+		TestBed.configureTestingModule({
+			imports: [CrListComponent],
+			providers: [{ provide: SessionService, useValue: { user: users.approver } }],
+		});
 
-	const fixture = TestBed.createComponent(CrListComponent);
-	const api = TestBed.inject(CrApiService);
+		await TestBed.compileComponents();
 
-	api.failNext = true;
+		const fixture = TestBed.createComponent(CrListComponent);
+		const api = TestBed.inject(CrApiService);
 
-	fixture.detectChanges();
-	await flush();
-	fixture.detectChanges();
+		api.failNext = true;
 
-	expect(fixture.nativeElement.querySelector('.cr-list__error')).not.toBeNull();
-	expect(fixture.nativeElement.querySelector('.cr-list__error').textContent).toContain(
-		'Couldn\'t load'
-	);
-});
+		fixture.detectChanges();
+		await flush();
+		fixture.detectChanges();
 
+		expect(fixture.nativeElement.querySelector('.cr-list__error')).not.toBeNull();
+		expect(fixture.nativeElement.querySelector('.cr-list__error').textContent).toContain("Couldn't load");
+	});
 
 	it('shows the empty state when the org has no change requests', async () => {
 		const fixture = await render({ id: 'x', orgCode: 'org-empty', policies: ['cr_r_o'] });
